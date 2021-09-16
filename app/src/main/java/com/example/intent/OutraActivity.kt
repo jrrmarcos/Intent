@@ -1,5 +1,6 @@
 package com.example.intent
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -18,12 +19,27 @@ class OutraActivity : AppCompatActivity() {
         supportActionBar?.title = "Outra Activity" //Kotlin
         supportActionBar?.subtitle = "Recebe e retorna um valor"
 
+        /*
         val parametrosBundle = intent.extras
         if(parametrosBundle != null) {
             val recebido = parametrosBundle.getString(MainActivity.PARAMETRO,"")
             activityOutraBinding.recebidoTv.text = recebido
         }
+
+
+        intent.extras?.getString(MainActivity.PARAMETRO,"").run {
+            activityOutraBinding.recebidoTv.text = this
+        }*/
+
+        intent.getStringExtra(MainActivity.PARAMETRO)?.run {
+            activityOutraBinding.recebidoTv.text = this
+        }
+
         activityOutraBinding.retornarBt.setOnClickListener{
+            val retornoIntent: Intent = Intent()
+            retornoIntent.putExtra(MainActivity.PARAMETRO, activityOutraBinding.retornoEt.text.toString())
+            setResult(RESULT_OK, retornoIntent)
+
             finish()
         }
 

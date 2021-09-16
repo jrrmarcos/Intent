@@ -6,13 +6,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.intent.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var outraActivityResultLauncher: ActivityResultLauncher<Intent>
 
     companion object {
         val PARAMETRO = "PARAMETRO"
+        //val OUTRA_ACTIVITY_REQUEST_CODE = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +29,15 @@ class MainActivity : AppCompatActivity() {
         //getSupportActionBar()?.setTitle("Tratando Intents") //Java
         supportActionBar?.title = "Tratando Intents" //Kotlin
         supportActionBar?.subtitle = "Principais tipos"
+
+        outraActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            if (result?.resultCode == RESULT_OK) {
+                result?.data?.getStringExtra(PARAMETRO)?.let {
+                    activityMainBinding.retornoTv.text = it
+                }
+            }
+        }
+
 
         Log.v("${getString(R.string.app_name)}/${localClassName}","onCreate: Início CC")
     }
@@ -62,14 +77,20 @@ class MainActivity : AppCompatActivity() {
             R.id.outraActivityMi -> {
                 //Abrir outra activity
                 val outraActivityIntent: Intent = Intent(this, OutraActivity::class.java)
+                outraActivityIntent.putExtra(PARAMETRO, activityMainBinding.parametroEt.text.toString())
 
-                //Passagem usando Bundle
+                /*Passagem usando Bundle
                 val parametrosBundle: Bundle = Bundle()
                 parametrosBundle.putString(PARAMETRO, activityMainBinding.parametroEt.text.toString())
 
                 outraActivityIntent.putExtras(parametrosBundle)
+                */
 
-                startActivity(outraActivityIntent)
+
+                //startActivity(outraActivityIntent)
+                //startActivityForResult(outraActivityIntent, OUTRA_ACTIVITY_REQUEST_CODE)
+
+                outraActivityResultLauncher.launch(outraActivityIntent)
                 true
             }
             R.id.viewMi -> {
@@ -97,4 +118,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    /*
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == OUTRA_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            data?.getStringExtra(PARAMETRO)?.let {
+                activityMainBinding.retornoTv.text = it
+            }
+        }
+    }
+    */
+
 }
